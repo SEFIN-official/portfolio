@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Send, Phone, MapPin, Mail } from "lucide-react";
+import { Send, MapPin, Mail } from "lucide-react";
+import { site } from "@/data/sefinContent";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -51,9 +52,19 @@ export default function Contact() {
       return;
     }
 
-    // Create a new FormData object to send to Web3Forms API
+    const accessKey = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY;
+    if (!accessKey) {
+      const body = encodeURIComponent(
+        `${formData.message}\n\n— ${formData.name} <${formData.email}>`
+      );
+      const subj = encodeURIComponent(formData.subject);
+      window.location.href = `mailto:${site.email}?subject=${subj}&body=${body}`;
+      setStatus("Opening your email app — add VITE_WEB3FORMS_ACCESS_KEY to send via the form.");
+      return;
+    }
+
     const form = new FormData();
-    form.append("access_key", "90f4b8af-e590-42b0-beaf-10b18f66a703"); // Replace with your Web3Forms access key
+    form.append("access_key", accessKey);
     form.append("name", formData.name);
     form.append("email", formData.email);
     form.append("subject", formData.subject || "New Contact Form Submission");
@@ -88,8 +99,8 @@ export default function Contact() {
 
   return (
     <main
-      className="pt-20 lg:pt-[0rem] bg-[#04081A]
- text-white min-h-screen"
+      id="contact"
+      className="pt-20 lg:pt-[0rem] bg-[#04081A] scroll-mt-24 text-white min-h-screen"
     >
       <section className="hero min-h-screen flex items-center relative px-4 sm:px-6 lg:px-8">
         <div className="container mx-auto">
@@ -101,7 +112,7 @@ export default function Contact() {
                   Get in Touch
                 </h2>
                 <p className="text-gray-300 text-lg">
-                  Have a question or want to work together? Drop us a message!
+                  Internships, collaborations, or a quick hello — send a message.
                 </p>
               </div>
 
@@ -112,7 +123,12 @@ export default function Contact() {
                   </div>
                   <div>
                     <h3 className="font-semibold">Email</h3>
-                    <p className="text-gray-400">olovajs@gmail.com</p>
+                    <a
+                      href={`mailto:${site.email}`}
+                      className="text-gray-400 hover:text-white transition-colors"
+                    >
+                      {site.email}
+                    </a>
                   </div>
                 </div>
 
@@ -122,7 +138,7 @@ export default function Contact() {
                   </div>
                   <div>
                     <h3 className="font-semibold">Location</h3>
-                    <p className="text-gray-400">Laxmipure, Natore 6400</p>
+                    <p className="text-gray-400">{site.location}</p>
                   </div>
                 </div>
               </div>
